@@ -31,52 +31,32 @@ namespace BNK_Editor
                 if (i >= 8) { _DataSection.Add(b); }
                 i++;
             }
-            /*
-            for (int i = 0; i < _RawData.Count; i++)
-            {
-                if (i < 4)
-                {
-                    _Header.Add(_RawData.;// += _RawData[i];
-                }
-                if (i < 8) 
-                { 
-                    _ChunkSize.Add()// += _RawData[i];
-                }
-                else _DataSection.Add()// += _RawData[i];
-            }*/
         }
 
         public string Print()
         {
-            string headerName = "";
-            foreach (byte headChar in _Header)
-            {
-                headerName += Convert.ToChar(headChar);
-            }
-
-                return " Header = " + headerName
-                  +"\nHeader Size = " + _Header.Count
-                  +"\n Chunk Size = " + _ChunkSize.Count
-                  +"\n  Data Size = " + (_Header.Count + _ChunkSize.Count + _DataSection.Count);
+            return " Header = " + ReadHeaderAsText()
+              + "\nHeader Size = " + _Header.Count
+              + "\n Chunk Size = " + ReadChunkSizeAsInt32()
+              + "\n  Data Size = " + ReadFullChunkSizeWithHeader();
         }
 
-        public string ReadHeader()
+        public int ReadFullChunkSizeWithHeader()
+        {
+            return _Header.Count + _ChunkSize.Count + _DataSection.Count;
+        }
+
+        public string ReadHeaderAsText()
         {
             string Header = "";
-            foreach (byte b in _Header) { Header += b; }
+            foreach (byte b in _Header) { Header += Convert.ToChar(b); }
             return Header;
         }
 
-        public int ReadChunksize()
+        public int ReadChunkSizeAsInt32()
         {
             string size = Convert.ToHexString(_ChunkSize.ToArray());
             return BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
-        }
-
-        public byte[] WriteChunksize(int newSize)
-        {
-            newSize = BinaryPrimitives.ReverseEndianness(newSize);
-            return BitConverter.GetBytes(newSize);
         }
 
     }

@@ -16,19 +16,10 @@ namespace BNK_Editor
 
         public void LoadData(byte[] data) => _data = data.ToList<byte>();
 
-        public void SplitHeads()
-        {
 
-        }
-
-        public void WriteData()
+        public void LoadData()
         {
-            //string header = "";
             EncodedData Temp = new();
-            /*for (int i = 0; i < 4; i++)
-            {
-                header += Convert.ToChar(_data[i]);
-            }*/
 
             string size;
 
@@ -39,29 +30,29 @@ namespace BNK_Editor
             
             for (int fileOffset = 0; fileOffset < _data.Count;)
             {
-                //Init new parse
-                DataChunk = new();
-                size = Convert.ToHexString(_data.ToArray(), fileOffset + 4, 4);
-                currentChunk.Clear();
-                currentChunkSize = BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
-
-                //parse data per chunk
-                for (int chunkOffset = 0; chunkOffset < currentChunkSize + 8; chunkOffset++)
-                {
-                    currentChunk.Add(_data[fileOffset + chunkOffset]);
-                }
-
-                //Apply parsed data and setup for next parse.
-                DataChunk.Load(currentChunk, currentChunkIndex);
-                _headerList.Add(DataChunk);
-                fileOffset += currentChunkSize + 8;
-                currentChunkIndex++;
+                SplitHeads(out size, currentChunk, out DataChunk, out currentChunkSize, ref currentChunkIndex, ref fileOffset);
             }
         }
 
-        private void CreateStructures()
+        private void SplitHeads(out string size, List<byte> currentChunk, out EncodedData DataChunk, out int currentChunkSize, ref int currentChunkIndex, ref int fileOffset)
         {
+            //Init new parse
+            DataChunk = new();
+            size = Convert.ToHexString(_data.ToArray(), fileOffset + 4, 4);
+            currentChunk.Clear();
+            currentChunkSize = BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
 
+            //parse data per chunk
+            for (int chunkOffset = 0; chunkOffset < currentChunkSize + 8; chunkOffset++)
+            {
+                currentChunk.Add(_data[fileOffset + chunkOffset]);
+            }
+
+            //Apply parsed data and setup for next parse.
+            DataChunk.Load(currentChunk, currentChunkIndex);
+            _headerList.Add(DataChunk);
+            fileOffset += currentChunkSize + 8;
+            currentChunkIndex++;
         }
     }
 }
