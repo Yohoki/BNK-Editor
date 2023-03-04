@@ -9,35 +9,53 @@ namespace BNK_Editor
 {
     public class BNK
     {
-        private byte[] _data;
-        private List<EncodedData> _headerList = new();
-        private List<Byte[]> _hierList = new();
+        private List<byte> _data = new();
+        public List<EncodedData> _headerList = new();
+        private List<List<byte>> _hierList = new();
         private int _hierIndex = 0;
 
-        public void LoadData(byte[] data) => _data = data;
+        public void LoadData(byte[] data) => _data = data.ToList<byte>();
 
         public void SplitHeads()
         {
-            
+
         }
 
-        public string WriteData()
+        public void WriteData()
         {
-            string header = "";
-            for (int i = 0; i < 4; i++)
+            //string header = "";
+            EncodedData Temp = new();
+            /*for (int i = 0; i < 4; i++)
             {
                 header += Convert.ToChar(_data[i]);
-            }
+            }*/
 
-            string size = Convert.ToHexString(_data, 4, 4);
-            if (header == "BKHD")
+            string size;
+
+            List<byte> currentChunk = new();
+            EncodedData DataChunk;
+            int currentChunkSize;
+            int currentChunkIndex = 0;
+            
+            for (int fileOffset = 0; fileOffset < _data.Count;)
             {
-                int chunksize = BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
-                return "HEADER =   " + header + "\nCHUNK SIZE =" + chunksize;
-            }
-            else
-            {
-                return "Failed to parse BNK Header";
+                //Init new parse
+                DataChunk = new();
+                size = Convert.ToHexString(_data.ToArray(), fileOffset + 4, 4);
+                currentChunk.Clear();
+                currentChunkSize = BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
+
+                //parse data per chunk
+                for (int chunkOffset = 0; chunkOffset < currentChunkSize + 8; chunkOffset++)
+                {
+                    currentChunk.Add(_data[fileOffset + chunkOffset]);
+                }
+
+                //Apply parsed data and setup for next parse.
+                DataChunk.Load(currentChunk, currentChunkIndex);
+                _headerList.Add(DataChunk);
+                fileOffset += currentChunkSize + 8;
+                currentChunkIndex++;
             }
         }
 

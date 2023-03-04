@@ -136,6 +136,9 @@
             this.Controls.Add(this.Cmb_HeirList);
             this.Controls.Add(this.Btn_Save);
             this.Controls.Add(this.Btn_Open);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "BoiNK -BNK Editor";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();

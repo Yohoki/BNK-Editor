@@ -42,7 +42,11 @@ namespace BNK_Editor
 
         private void DBG_Btn_Debug_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(BankFile.WriteData());
+            BankFile.WriteData();
+            foreach (var i in BankFile._headerList)
+            {
+                MessageBox.Show(i.Print());
+            }
         }
     }
 }
