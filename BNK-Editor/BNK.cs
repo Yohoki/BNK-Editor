@@ -9,50 +9,48 @@ namespace BNK_Editor
 {
     public class BNK
     {
-        private List<byte> _data = new();
+        private Stream _data;
         public List<EncodedData> _headerList = new();
-        private List<List<byte>> _hierList = new();
-        private int _hierIndex = 0;
 
-        public void LoadData(byte[] data) => _data = data.ToList<byte>();
-
-
-        public void LoadData()
+        public void LoadData(Stream data)
         {
-            EncodedData Temp = new();
+            _data = data;
 
-            string size;
-
-            List<byte> currentChunk = new();
-            EncodedData DataChunk;
-            int currentChunkSize;
             int currentChunkIndex = 0;
-            
-            for (int fileOffset = 0; fileOffset < _data.Count;)
+            for (int fileOffset = 0; fileOffset < _data.Length;)
             {
-                SplitHeads(out size, currentChunk, out DataChunk, out currentChunkSize, ref currentChunkIndex, ref fileOffset);
+                SplitHeads(ref fileOffset, currentChunkIndex);
+                currentChunkIndex++;
             }
+
+            _data.Dispose();
         }
 
-        private void SplitHeads(out string size, List<byte> currentChunk, out EncodedData DataChunk, out int currentChunkSize, ref int currentChunkIndex, ref int fileOffset)
+        private void SplitHeads(ref int fileOffset, int currentChunkIndex)
         {
-            //Init new parse
-            DataChunk = new();
-            size = Convert.ToHexString(_data.ToArray(), fileOffset + 4, 4);
-            currentChunk.Clear();
-            currentChunkSize = BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
+            EncodedData DataChunk = new();
+
+            byte[] buffer;
+            
+            //Get chunksize
+            buffer = new byte[4];
+            _data.Position = fileOffset + 4;
+            _data.ReadExactly(buffer, 0, 4);
+            int currentChunkSize =
+                BinaryPrimitives.ReverseEndianness(
+                    int.Parse(Convert.ToHexString(buffer),
+                              System.Globalization.NumberStyles.HexNumber));
 
             //parse data per chunk
-            for (int chunkOffset = 0; chunkOffset < currentChunkSize + 8; chunkOffset++)
-            {
-                currentChunk.Add(_data[fileOffset + chunkOffset]);
-            }
+            buffer = new byte[currentChunkSize + 8];
+            _data.Position = fileOffset;
+            _data.ReadExactly(buffer, 0, currentChunkSize + 8);
 
             //Apply parsed data and setup for next parse.
-            DataChunk.Load(currentChunk, currentChunkIndex);
+            DataChunk.Load(buffer, currentChunkIndex);
             _headerList.Add(DataChunk);
             fileOffset += currentChunkSize + 8;
-            currentChunkIndex++;
         }
     }
 }
+

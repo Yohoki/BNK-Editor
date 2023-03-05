@@ -11,52 +11,69 @@ namespace BNK_Editor
 {
     public class EncodedData
     {
-        private List<byte> _RawData = new();
-        private List<byte> _Header = new();
-        private List<byte> _ChunkSize = new();
-        private List<byte> _DataSection = new();
+        internal Stream data;
+        private byte[] _RawData;
+        private byte[] _Header = new byte[4];
+        private byte[] _ChunkSize = new byte[4];
+        private byte[] _DataSection;
+        public  List<Hierarchy>  HIRCList = new();
 
         private int _Index;
 
-        public void Load(List<byte> rawData, int index)
+        public void Load(byte[] rawData, int index)
         {
             _RawData = rawData;
             _Index = index;
+            data = new MemoryStream(_RawData);
 
-            int i = 0;
-            foreach (byte b in _RawData)
+            data.ReadExactly(_Header, 0, 4);
+            data.ReadExactly(_ChunkSize, 0, 4);
+            _DataSection = new byte[Utils.ReadHexAsInt32(_ChunkSize)];
+            data.ReadExactly(_DataSection, 0, Utils.ReadHexAsInt32(_ChunkSize));
+
+            data.Dispose();
+
+            if (Utils.ReadHexAsText(_Header) == "HIRC")
             {
-                if (i <= 3) { _Header.Add(b); }
-                if (i >= 4 && i <= 7) { _ChunkSize.Add(b); }
-                if (i >= 8) { _DataSection.Add(b); }
-                i++;
+                GenHierarchyList();
             }
+        }
+
+        public void GenHierarchyList()
+        {
+            Hierarchy hierarchy = new();
+            byte[] buffer = new byte[4];
+            data = new MemoryStream(_DataSection);
+
+            //Get total number of Hierachy in list
+            data.ReadExactly(buffer, 0, 4);
+            int ListNumber = Utils.ReadHexAsInt32(buffer);
+
+            for (int index = 0; index < ListNumber; index++)
+            {
+                // get size
+                // reset position to pre-size
+                // send data to hierarchy class
+                // load hierarchy into list
+            }
+
+            data.Dispose();
+
+
         }
 
         public string Print()
         {
-            return " Header = " + ReadHeaderAsText()
-              + "\nHeader Size = " + _Header.Count
-              + "\n Chunk Size = " + ReadChunkSizeAsInt32()
-              + "\n  Data Size = " + ReadFullChunkSizeWithHeader();
+            return " Header = " + Utils.ReadHexAsText(_Header)
+              + "\nHeader Size = " + _Header.Length
+              + "\n Chunk Size = " + Utils.ReadHexAsInt32(_ChunkSize)
+              + "\n  Data Size = " + ReadFullChunkSizeWithHeader()
+              + "\nIndex Position = " + _Index;
         }
 
         public int ReadFullChunkSizeWithHeader()
         {
-            return _Header.Count + _ChunkSize.Count + _DataSection.Count;
-        }
-
-        public string ReadHeaderAsText()
-        {
-            string Header = "";
-            foreach (byte b in _Header) { Header += Convert.ToChar(b); }
-            return Header;
-        }
-
-        public int ReadChunkSizeAsInt32()
-        {
-            string size = Convert.ToHexString(_ChunkSize.ToArray());
-            return BinaryPrimitives.ReverseEndianness(int.Parse(size, System.Globalization.NumberStyles.HexNumber));
+            return _Header.Length + _ChunkSize.Length + _DataSection.Length;
         }
 
     }

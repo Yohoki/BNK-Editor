@@ -13,15 +13,21 @@ namespace BNK_Editor
         public bool DBG_DebugMode = true; //DEBUG
         public string DBG_FilePath = "D:\\BNK_Mod\\"; //DEBUG
         public string DBG_FileName = "spells_perk_shadowblink_akb.bnk"; //DEBUG
+        public Stream StreamBankFile;
         public string Filepath;
         public BNK BankFile = new();
 
         private void Btn_Open_Click(object sender, EventArgs e)
         {
             //DEBUG Start
-            if (DBG_DebugMode) { Filepath = DBG_FilePath + DBG_FileName; }
+            if (DBG_DebugMode)
+            {
+                Filepath = DBG_FilePath + DBG_FileName;
+            }
+
             //DEBUG End
-            BankFile.LoadData(File.ReadAllBytes(Filepath));
+            StreamBankFile = File.OpenRead(Filepath);
+            BankFile.LoadData(StreamBankFile);
 
         }
 
@@ -42,7 +48,6 @@ namespace BNK_Editor
 
         private void DBG_Btn_Debug_Click(object sender, EventArgs e)
         {
-            BankFile.LoadData();
             foreach (var i in BankFile._headerList)
             {
                 MessageBox.Show(i.Print());
