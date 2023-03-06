@@ -32,7 +32,11 @@ namespace BNK_Editor
             data.ReadExactly(_raw_dwSectionSize, 0, 4);
             //catch small packets.
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36) { data.ReadExactly(_raw_PrePropsData, 0, 32); }
-            else { data.ReadExactly(_raw_PrePropsData, 0, Convert.ToInt32(data.Length - data.Position) - 5); }
+            else
+            {
+                _raw_PrePropsData = new byte[data.Length - data.Position -5];
+                data.ReadExactly(_raw_PrePropsData, 0, Convert.ToInt32(data.Length - data.Position) - 5);
+            }
 
             //check first byte for type
             if (_raw_eHircType[0] == 2)
