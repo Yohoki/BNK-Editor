@@ -50,7 +50,7 @@ namespace BNK_Editor
         {
             foreach (var i in BankFile._headerList)
             {
-                MessageBox.Show(i.Print());
+                i.Print();
             }
         }
     }

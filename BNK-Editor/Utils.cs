@@ -22,5 +22,11 @@ namespace BNK_Editor
             string s = Convert.ToHexString(d);
             return BinaryPrimitives.ReverseEndianness(int.Parse(s, System.Globalization.NumberStyles.HexNumber));
         }
+
+        public static float ReadHexAsFloat(byte[] d)
+        {
+            //d.Reverse();
+            return BitConverter.ToSingle(d);
+        }
     }
 }

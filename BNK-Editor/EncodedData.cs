@@ -16,6 +16,8 @@ namespace BNK_Editor
         private byte[] _Header = new byte[4];
         private byte[] _ChunkSize = new byte[4];
         private byte[] _DataSection;
+
+        public int NumReleasableHircItem;
         public  List<Hierarchy>  HIRCList = new();
 
         private int _Index;
@@ -41,7 +43,8 @@ namespace BNK_Editor
 
         public void GenHierarchyList()
         {
-            Hierarchy hierarchy = new();
+            Hierarchy hierarchy;
+            int chunksize;
             byte[] buffer = new byte[4];
             data = new MemoryStream(_DataSection);
 
@@ -51,10 +54,24 @@ namespace BNK_Editor
 
             for (int index = 0; index < ListNumber; index++)
             {
-                // get size
-                // reset position to pre-size
+                hierarchy = new();
+                
+                //get Size
+                data.Position++;
+                data.ReadExactly(buffer, 0, 4);
+                chunksize = Utils.ReadHexAsInt32(buffer) + 5;
+                
+                // Reset to beginning of chunk
+                data.Position -= 5;
+
                 // send data to hierarchy class
+                buffer = new byte[chunksize];
+                data.ReadExactly(buffer, 0, chunksize);
+                hierarchy.GenNewHirc(buffer);
+
                 // load hierarchy into list
+                HIRCList.Add(hierarchy);
+                buffer = new byte[4];
             }
 
             data.Dispose();
@@ -62,13 +79,13 @@ namespace BNK_Editor
 
         }
 
-        public string Print()
+        public void Print()
         {
-            return " Header = " + Utils.ReadHexAsText(_Header)
-              + "\nHeader Size = " + _Header.Length
-              + "\n Chunk Size = " + Utils.ReadHexAsInt32(_ChunkSize)
-              + "\n  Data Size = " + ReadFullChunkSizeWithHeader()
-              + "\nIndex Position = " + _Index;
+            if (Utils.ReadHexAsText(_Header) != "HIRC") { return; }
+            foreach (var item in HIRCList)
+            {
+                item.ReadAllBytes();
+            }
         }
 
         public int ReadFullChunkSizeWithHeader()

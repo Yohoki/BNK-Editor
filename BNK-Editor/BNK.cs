@@ -51,6 +51,11 @@ namespace BNK_Editor
             _headerList.Add(DataChunk);
             fileOffset += currentChunkSize + 8;
         }
+
+        public void Print()
+        {
+            foreach (var header in _headerList) { header.Print(); }
+        }
     }
 }
 
