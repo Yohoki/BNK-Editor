@@ -16,6 +16,7 @@ namespace BNK_Editor
         public int         _PropsCount = 0;// # of Properties to edit
         public List<int>   _propsType = new();// Type of property (0x00=Vol, 0x3A=Loops)
         public List<float> _propsValues = new();// Value of property. (Most are Float, Loops is INT)
+        public int          uPluginID; // IMPORTANT Check for 0x65 and add +4 offset to props list if true.
 
         public int         _index;
 
@@ -37,6 +38,11 @@ namespace BNK_Editor
             data.ReadExactly(_raw_dwSectionSize, 0, 4);
             _dwSectionSize = Utils.ReadHexAsInt32(_raw_dwSectionSize);
 
+            //check Codec info
+            data.Position += 6;
+            uPluginID = data.ReadByte();
+            data.Position -= 7;
+
             //catch small packets.
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36) { data.ReadExactly(_raw_PrePropsData, 0, 32); }
             else
@@ -49,6 +55,9 @@ namespace BNK_Editor
             if (_eHircType == 0x02)
             {
                 GetSourceID();
+
+                if (uPluginID == 101) data.Position += 4;
+
                 //if 02, store all data properly
                 byte[] _buffer = new byte[4];
                 _PropsCount = data.ReadByte();

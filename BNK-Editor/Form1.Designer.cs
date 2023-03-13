@@ -97,8 +97,13 @@
             0,
             65536});
             this.NumPropValue.Location = new System.Drawing.Point(163, 115);
+            this.NumPropValue.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
             this.NumPropValue.Minimum = new decimal(new int[] {
-            20,
+            999,
             0,
             0,
             -2147483648});

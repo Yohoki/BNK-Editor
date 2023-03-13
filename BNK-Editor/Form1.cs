@@ -11,7 +11,7 @@ namespace BNK_Editor
             InitializeComponent();
         }
         
-        public bool DBG_DebugMode = true; //DEBUG
+        public bool DBG_DebugMode = false; //DEBUG
         public string DBG_FilePath = "D:\\BNK_Mod\\"; //DEBUG
         public string DBG_FileName = "spells_perk_shadowblink_akb.bnk"; //DEBUG
         public Stream StreamBankFile;
@@ -20,10 +20,21 @@ namespace BNK_Editor
 
         private void Btn_Open_Click(object sender, EventArgs e)
         {
+            BankFile = new();
             //DEBUG Start
-            if (DBG_DebugMode)
+            if (DBG_DebugMode) { Filepath = DBG_FilePath + DBG_FileName; }
+            if (!DBG_DebugMode)
             {
-                Filepath = DBG_FilePath + DBG_FileName;
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+
+                    openFileDialog.Filter = "WWise SoundBank files (*.bnk)|*.bnk|All files (*.*)|*.*";
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        Filepath = openFileDialog.FileName;
+                    }
+                    else return;
+                }
             }
 
             //DEBUG End
