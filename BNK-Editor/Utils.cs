@@ -25,8 +25,22 @@ namespace BNK_Editor
 
         public static float ReadHexAsFloat(byte[] d)
         {
-            //d.Reverse();
             return BitConverter.ToSingle(d);
+        }
+
+        public static byte[] ToHex(float d)
+        {
+            return BitConverter.GetBytes(d);
+        }
+
+        public static byte[] ToHex(int d)
+        {
+            return BitConverter.GetBytes(d);
+        }
+
+        public static byte[] ToHex(string d)
+        {
+            return Encoding.UTF8.GetBytes(d);
         }
     }
 }

@@ -11,11 +11,11 @@ namespace BNK_Editor
 {
     public class EncodedData
     {
-        internal Stream data;
-        private byte[] _RawData;
+        internal Stream? data;
+        private byte[]? _RawData;
         private byte[] _Header = new byte[4];
         private byte[] _ChunkSize = new byte[4];
-        private byte[] _DataSection;
+        private byte[]? _DataSection;
 
         public int NumReleasableHircItem;
         public  List<Hierarchy>  HIRCList = new();
@@ -67,7 +67,7 @@ namespace BNK_Editor
                 // send data to hierarchy class
                 buffer = new byte[chunksize];
                 data.ReadExactly(buffer, 0, chunksize);
-                hierarchy.GenNewHirc(buffer);
+                hierarchy.GenNewHirc(buffer, index);
 
                 // load hierarchy into list
                 HIRCList.Add(hierarchy);
@@ -86,6 +86,16 @@ namespace BNK_Editor
             {
                 item.ReadAllBytes();
             }
+        }
+
+        public List<Hierarchy> GetEditableList()
+        {
+            var list = new List<Hierarchy>();
+            foreach (Hierarchy item in HIRCList)
+            {
+                list.Add(item);
+            }
+            return list;
         }
 
         public int ReadFullChunkSizeWithHeader()

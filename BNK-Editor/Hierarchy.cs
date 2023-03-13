@@ -9,27 +9,34 @@ namespace BNK_Editor
     public class Hierarchy
     {
         // Converted Bits and Bobs.
-        private byte        _eHircType;     // we really only care about 0x02(Sound)... just store the rest...
-        private int         _dwSectionSize; // Needed to find next Hierachy
-        private int         _ulID;          // Display this? Really only used internally...
-        private int         _sourceID;      // Which WEM file is edited
-        private int         _PropsCount = 0;// # of Properties to edit
-        private List<int>   _propsType = new();// Type of property (0x00=Vol, 0x3A=Loops)
-        private List<float> _propsValues = new();// Value of property. (Most are Float, Loops is INT)
-        //private byte[]      _buffer;
+        public byte        _eHircType;     // we really only care about 0x02(Sound)... just store the rest...
+        public int         _dwSectionSize; // Needed to find next Hierachy
+      //public int         _ulID;          // Display this? Really only used internally...
+        public int         _sourceID;      // Which WEM file is edited
+        public int         _PropsCount = 0;// # of Properties to edit
+        public List<int>   _propsType = new();// Type of property (0x00=Vol, 0x3A=Loops)
+        public List<float> _propsValues = new();// Value of property. (Most are Float, Loops is INT)
+
+        public int         _index;
 
         //Raw Data Bits.
         private byte[] _raw_eHircType = new byte[1];     // decide if important
         private byte[] _raw_dwSectionSize = new byte[4]; // find next header, edit if size changed
         private byte[] _raw_PrePropsData = new byte[32]; // dontgivadamn area
-        private byte[] _raw_PropsData;                   // gen new on save.
-        private byte[] _raw_PostPropsData;               // dontgiveadamn area 2
+        private byte[]? _raw_PropsData;                   // gen new on save.
+        private byte[]? _raw_PostPropsData;               // dontgiveadamn area 2
 
-        public void GenNewHirc(byte[] rawData)
+        public void GenNewHirc(byte[] rawData, int index)
         {
+            _index = index;
             MemoryStream data = new(rawData);
+            
             data.ReadExactly(_raw_eHircType, 0, 1);
+            _eHircType = _raw_eHircType[0];
+
             data.ReadExactly(_raw_dwSectionSize, 0, 4);
+            _dwSectionSize = Utils.ReadHexAsInt32(_raw_dwSectionSize);
+
             //catch small packets.
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36) { data.ReadExactly(_raw_PrePropsData, 0, 32); }
             else
@@ -39,8 +46,9 @@ namespace BNK_Editor
             }
 
             //check first byte for type
-            if (_raw_eHircType[0] == 2)
+            if (_eHircType == 0x02)
             {
+                GetSourceID();
                 //if 02, store all data properly
                 byte[] _buffer = new byte[4];
                 _PropsCount = data.ReadByte();
@@ -81,20 +89,65 @@ namespace BNK_Editor
 
         public void ReadAllBytes()
         {
-            string s = "\nType: " + Convert.ToHexString(_raw_eHircType)
-                 + "\nSize: " + Convert.ToHexString(_raw_dwSectionSize)
+            string s = "\nType: " + TypeDef.getHircType(_eHircType)
+                 + "\nSize: " + Utils.ReadHexAsInt32(_raw_dwSectionSize) + "Bytes"
                  + "\nPrePropData: " + Convert.ToHexString(_raw_PrePropsData);
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36)
                 { s += "\nPostPropData: " + Convert.ToHexString(_raw_PostPropsData); }
             if (_raw_eHircType[0] == 2)
-                { s += "\n\n # of Properties: " + _PropsCount; }
+            {
+                s += "\nFileName: " + _sourceID + ".wem\n\n";
+                foreach (string P in ListProps()) { s += P; }
+            }
             MessageBox.Show(s);
+        }
+
+        public void GetSourceID()
+        {
+            MemoryStream data = new(_raw_PrePropsData);
+            data.Position = 9;
+            byte[] buffer = new byte[4];
+            data.ReadExactly(buffer, 0, 4);
+            _sourceID = Utils.ReadHexAsInt32(buffer);
+            data.Dispose();
+        }
+
+        public List<string> GetPropsList()
+        {
+            List<string> props = new();
+            if (_PropsCount == 0) props.Add("No Properties Available");
+            foreach (int prop in _propsType)
+            { props.Add( TypeDef.getPropType(prop) ); }
+            return props;
+        }
+
+        public override string ToString()
+        {
+            return TypeDef.getHircType(_eHircType) + $"[{_index}]" + (_eHircType == 2 ? $" - {_sourceID}.wem" : "");
         }
 
         public void AddNewProp() { }
 
         public void RemoveProp() { }
 
-        public void ListProps() { }
+        public void GenPropsData() 
+        {
+            _raw_PropsData = new byte[0];
+        }
+
+        public string[] ListProps()
+        {
+            string[] props = new string[_PropsCount];
+
+            if (_PropsCount == 0) props = new string[] { "\n\nNo Properties stored" };
+            for (int i = 0; i < _PropsCount; i++)
+            {
+                props[i] = $"\n\nProp Type:{TypeDef.getPropType(_propsType[i])}\nProp Value:{_propsValues[i]}";
+            }
+
+            //get source id//
+
+            return props;
+        }
     }
 }

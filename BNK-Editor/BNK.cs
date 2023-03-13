@@ -52,6 +52,17 @@ namespace BNK_Editor
             fileOffset += currentChunkSize + 8;
         }
 
+        public List<Hierarchy> GetList()
+        {
+            List<Hierarchy> list = new();
+            foreach (EncodedData header in _headerList)
+            {
+                list = header.GetEditableList();
+                if (list.Count > 0) return list;
+            }
+            return list;
+        }
+
         public void Print()
         {
             foreach (var header in _headerList) { header.Print(); }

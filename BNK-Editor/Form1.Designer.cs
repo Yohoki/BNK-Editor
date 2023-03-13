@@ -33,11 +33,11 @@
             this.Cmb_HeirList = new System.Windows.Forms.ComboBox();
             this.Cmb_PropList = new System.Windows.Forms.ComboBox();
             this.Btn_AddNew = new System.Windows.Forms.Button();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.NumPropValue = new System.Windows.Forms.NumericUpDown();
             this.Lbl_PropName = new System.Windows.Forms.Label();
             this.Btn_Remove = new System.Windows.Forms.Button();
             this.DBG_Btn_Debug = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumPropValue)).BeginInit();
             this.SuspendLayout();
             // 
             // Btn_Open
@@ -67,6 +67,7 @@
             this.Cmb_HeirList.Name = "Cmb_HeirList";
             this.Cmb_HeirList.Size = new System.Drawing.Size(263, 28);
             this.Cmb_HeirList.TabIndex = 3;
+            this.Cmb_HeirList.SelectedIndexChanged += new System.EventHandler(this.Cmb_HeirList_SelectedIndexChanged);
             // 
             // Cmb_PropList
             // 
@@ -86,12 +87,25 @@
             this.Btn_AddNew.UseVisualStyleBackColor = true;
             this.Btn_AddNew.Click += new System.EventHandler(this.Btn_AddNew_Click);
             // 
-            // numericUpDown1
+            // NumPropValue
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(163, 115);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(69, 27);
-            this.numericUpDown1.TabIndex = 6;
+            this.NumPropValue.DecimalPlaces = 1;
+            this.NumPropValue.Enabled = false;
+            this.NumPropValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.NumPropValue.Location = new System.Drawing.Point(163, 115);
+            this.NumPropValue.Minimum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            -2147483648});
+            this.NumPropValue.Name = "NumPropValue";
+            this.NumPropValue.Size = new System.Drawing.Size(69, 27);
+            this.NumPropValue.TabIndex = 6;
+            this.NumPropValue.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Lbl_PropName
             // 
@@ -126,11 +140,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(287, 150);
+            this.ClientSize = new System.Drawing.Size(284, 153);
             this.Controls.Add(this.DBG_Btn_Debug);
             this.Controls.Add(this.Btn_Remove);
             this.Controls.Add(this.Lbl_PropName);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.NumPropValue);
             this.Controls.Add(this.Btn_AddNew);
             this.Controls.Add(this.Cmb_PropList);
             this.Controls.Add(this.Cmb_HeirList);
@@ -140,8 +154,8 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";
-            this.Text = "BoiNK -BNK Editor";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.Text = "BoNK -BNK Editor";
+            ((System.ComponentModel.ISupportInitialize)(this.NumPropValue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -155,7 +169,7 @@
         private Label Lbl_PropName;
         public ComboBox Cmb_HeirList;
         public ComboBox Cmb_PropList;
-        public NumericUpDown numericUpDown1;
+        public NumericUpDown NumPropValue;
         private Button Btn_Remove;
         private Button DBG_Btn_Debug;
     }
