@@ -75,10 +75,11 @@ namespace BNK_Editor
 
         public void LoadPropValue()
         {
+            if (Cmb_PropList.Items[0] == "No Properties Available") return;
             NumPropValue.Enabled = true;
 
             Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
-            NumPropValue.Value = Convert.ToDecimal(Hirc._propsValues[Cmb_PropList.SelectedIndex]);
+            NumPropValue.Value = Convert.ToDecimal(Hirc.propsValues[Cmb_PropList.SelectedIndex]);
         }
 
         private void Btn_Save_Click(object sender, EventArgs e)
@@ -109,6 +110,11 @@ namespace BNK_Editor
             Cmb_PropList.Items.Clear();
             Cmb_PropList.Enabled = false;
             LoadPropsCMBList();
+        }
+
+        private void Cmb_PropList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadPropValue();
         }
     }
 }

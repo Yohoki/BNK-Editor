@@ -76,6 +76,7 @@
             this.Cmb_PropList.Name = "Cmb_PropList";
             this.Cmb_PropList.Size = new System.Drawing.Size(220, 28);
             this.Cmb_PropList.TabIndex = 4;
+            this.Cmb_PropList.SelectedIndexChanged += new System.EventHandler(this.Cmb_PropList_SelectedIndexChanged);
             // 
             // Btn_AddNew
             // 
@@ -89,7 +90,7 @@
             // 
             // NumPropValue
             // 
-            this.NumPropValue.DecimalPlaces = 1;
+            this.NumPropValue.DecimalPlaces = 2;
             this.NumPropValue.Enabled = false;
             this.NumPropValue.Increment = new decimal(new int[] {
             1,
@@ -98,12 +99,12 @@
             65536});
             this.NumPropValue.Location = new System.Drawing.Point(163, 115);
             this.NumPropValue.Maximum = new decimal(new int[] {
-            999,
+            200,
             0,
             0,
             0});
             this.NumPropValue.Minimum = new decimal(new int[] {
-            999,
+            200,
             0,
             0,
             -2147483648});

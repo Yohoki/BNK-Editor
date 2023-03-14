@@ -9,14 +9,15 @@ namespace BNK_Editor
     public class Hierarchy
     {
         // Converted Bits and Bobs.
-        public byte        _eHircType;     // we really only care about 0x02(Sound)... just store the rest...
-        public int         _dwSectionSize; // Needed to find next Hierachy
-      //public int         _ulID;          // Display this? Really only used internally...
-        public int         _sourceID;      // Which WEM file is edited
-        public int         _PropsCount = 0;// # of Properties to edit
-        public List<int>   _propsType = new();// Type of property (0x00=Vol, 0x3A=Loops)
-        public List<float> _propsValues = new();// Value of property. (Most are Float, Loops is INT)
-        public int          uPluginID; // IMPORTANT Check for 0x65 and add +4 offset to props list if true.
+        public byte        eHircType;          // we really only care about 0x02(Sound)... just store the rest...
+        public int         dwSectionSize;      // Needed to find next Hierachy
+      //public int         ulID;               // Display this? Really only used internally...
+        public int         sourceID;           // Which WEM file is edited
+        public int         PropsCount = 0;     // # of Properties to edit
+        public List<int>   propsType = new();  // Type of property (0x00=Vol, 0x3A=Loops)
+        public List<float> propsValues = new();// Value of property. (Most are Float, Loops is INT)
+        //public int         propValueLoops = 0; // Loops needs to use INT.
+        public int         uPluginID; //!!-----// IMPORTANT Check for 0x65 and add +4 offset to props list if true.
 
         public int         _index;
 
@@ -33,10 +34,10 @@ namespace BNK_Editor
             MemoryStream data = new(rawData);
             
             data.ReadExactly(_raw_eHircType, 0, 1);
-            _eHircType = _raw_eHircType[0];
+            eHircType = _raw_eHircType[0];
 
             data.ReadExactly(_raw_dwSectionSize, 0, 4);
-            _dwSectionSize = Utils.ReadHexAsInt32(_raw_dwSectionSize);
+            dwSectionSize = Utils.ReadHexAsInt32(_raw_dwSectionSize);
 
             //check Codec info
             data.Position += 6;
@@ -52,7 +53,7 @@ namespace BNK_Editor
             }
 
             //check first byte for type
-            if (_eHircType == 0x02)
+            if (eHircType == 0x02)
             {
                 GetSourceID();
 
@@ -60,18 +61,19 @@ namespace BNK_Editor
 
                 //if 02, store all data properly
                 byte[] _buffer = new byte[4];
-                _PropsCount = data.ReadByte();
+                PropsCount = data.ReadByte();
                 //data.Position++;
 
-                for (int i = 0; i < _PropsCount; i++)
-                    { _propsType.Add(data.ReadByte()); }
+                for (int i = 0; i < PropsCount; i++)
+                    { propsType.Add(data.ReadByte()); }
 
-                if (_propsType.Count > 0)
+                if (propsType.Count > 0)
                 {
-                    foreach (int i in _propsType)
+                    foreach (int i in propsType)
                     {
                         data.ReadExactly(_buffer, 0, 4);
-                        _propsValues.Add(Utils.ReadHexAsFloat(_buffer));
+                        if (i == 0x3A) { propsValues.Add((float)Utils.ReadHexAsInt32(_buffer)); }
+                        else propsValues.Add(Utils.ReadHexAsFloat(_buffer));
                     }
                 }
 
@@ -98,14 +100,14 @@ namespace BNK_Editor
 
         public void ReadAllBytes()
         {
-            string s = "\nType: " + TypeDef.getHircType(_eHircType)
+            string s = "\nType: " + TypeDef.getHircType(eHircType)
                  + "\nSize: " + Utils.ReadHexAsInt32(_raw_dwSectionSize) + "Bytes"
                  + "\nPrePropData: " + Convert.ToHexString(_raw_PrePropsData);
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36)
                 { s += "\nPostPropData: " + Convert.ToHexString(_raw_PostPropsData); }
             if (_raw_eHircType[0] == 2)
             {
-                s += "\nFileName: " + _sourceID + ".wem\n\n";
+                s += "\nFileName: " + sourceID + ".wem\n\n";
                 foreach (string P in ListProps()) { s += P; }
             }
             MessageBox.Show(s);
@@ -117,22 +119,22 @@ namespace BNK_Editor
             data.Position = 9;
             byte[] buffer = new byte[4];
             data.ReadExactly(buffer, 0, 4);
-            _sourceID = Utils.ReadHexAsInt32(buffer);
+            sourceID = Utils.ReadHexAsInt32(buffer);
             data.Dispose();
         }
 
         public List<string> GetPropsList()
         {
             List<string> props = new();
-            if (_PropsCount == 0) props.Add("No Properties Available");
-            foreach (int prop in _propsType)
+            if (PropsCount == 0) props.Add("No Properties Available");
+            foreach (int prop in propsType)
             { props.Add( TypeDef.getPropType(prop) ); }
             return props;
         }
 
         public override string ToString()
         {
-            return TypeDef.getHircType(_eHircType) + $"[{_index}]" + (_eHircType == 2 ? $" - {_sourceID}.wem" : "");
+            return TypeDef.getHircType(eHircType) + $"[{_index}]" + (eHircType == 2 ? $" - {sourceID}.wem" : "");
         }
 
         public void AddNewProp() { }
@@ -146,12 +148,12 @@ namespace BNK_Editor
 
         public string[] ListProps()
         {
-            string[] props = new string[_PropsCount];
+            string[] props = new string[PropsCount];
 
-            if (_PropsCount == 0) props = new string[] { "\n\nNo Properties stored" };
-            for (int i = 0; i < _PropsCount; i++)
+            if (PropsCount == 0) props = new string[] { "\n\nNo Properties stored" };
+            for (int i = 0; i < PropsCount; i++)
             {
-                props[i] = $"\n\nProp Type:{TypeDef.getPropType(_propsType[i])}\nProp Value:{_propsValues[i]}";
+                props[i] = $"\n\nProp Type:{TypeDef.getPropType(propsType[i])}\nProp Value:{propsValues[i]}";
             }
 
             //get source id//
