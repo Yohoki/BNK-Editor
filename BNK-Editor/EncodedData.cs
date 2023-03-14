@@ -79,6 +79,24 @@ namespace BNK_Editor
 
         }
 
+        public byte[] MakeDataChunks()
+        {
+            if (Utils.ReadHexAsText(_Header) == "HIRC")
+            {
+                _DataSection = new byte[0];
+                _DataSection = _DataSection.Concat(BitConverter.GetBytes(HIRCList.Count)).ToArray();
+
+                foreach (Hierarchy Hirc in HIRCList)
+                {
+                    _DataSection = _DataSection.Concat(Hirc.MakeHirc()).ToArray();
+                    //MessageBox.Show(BitConverter.ToString(Hirc.MakeHirc()).Replace("-",""), "DEBUG HIRC #"+Hirc._index);
+                }
+                _ChunkSize = Utils.ToHex(_DataSection.Length);
+            }
+            MessageBox.Show(BitConverter.ToString(_Header.Concat(_ChunkSize).Concat(_DataSection).ToArray()).Replace("-",""), "DEBUG: Rebuild Chunks");//DEBUG
+            return _Header.Concat(_ChunkSize).Concat(_DataSection).ToArray();
+        }
+
         public void Print()
         {
             if (Utils.ReadHexAsText(_Header) != "HIRC") { return; }

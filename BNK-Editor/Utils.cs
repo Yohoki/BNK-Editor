@@ -42,5 +42,10 @@ namespace BNK_Editor
         {
             return Encoding.UTF8.GetBytes(d);
         }
+
+        public static byte ToHexByte(int d)
+        {
+            return (byte)(16 * (d / 10) + (d % 10));
+        }
     }
 }

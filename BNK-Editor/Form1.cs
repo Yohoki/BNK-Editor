@@ -21,8 +21,9 @@ namespace BNK_Editor
         private void Btn_Open_Click(object sender, EventArgs e)
         {
             BankFile = new();
-            //DEBUG Start
-            if (DBG_DebugMode) { Filepath = DBG_FilePath + DBG_FileName; }
+
+            if (DBG_DebugMode) { Filepath = DBG_FilePath + DBG_FileName; } //DEBUG
+
             if (!DBG_DebugMode)
             {
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -37,7 +38,6 @@ namespace BNK_Editor
                 }
             }
 
-            //DEBUG End
             StreamBankFile = File.OpenRead(Filepath);
             BankFile.LoadData(StreamBankFile);
             LoadHircCMBList();
@@ -58,6 +58,7 @@ namespace BNK_Editor
         {
             Cmb_PropList.Enabled= false;
             NumPropValue.Enabled= false;
+            NumPropValue.Value = 0.00M;
             Cmb_PropList.Items.Clear();
 
             foreach (Hierarchy H in Cmb_HeirList.Items)
@@ -84,6 +85,7 @@ namespace BNK_Editor
 
         private void Btn_Save_Click(object sender, EventArgs e)
         {
+              
 
         }
 
@@ -97,13 +99,14 @@ namespace BNK_Editor
 
         }
 
+        //DEBUG Star
         private void DBG_Btn_Debug_Click(object sender, EventArgs e)
         {
-            foreach (var i in BankFile._headerList)
+            foreach (EncodedData D in BankFile._headerList)
             {
-                i.Print();
+                D.MakeDataChunks(); //DEBUGHirc.MakeHirc();
             }
-        }
+        } //DEBUG End
 
         private void Cmb_HeirList_SelectedIndexChanged(object sender, EventArgs e)
         {

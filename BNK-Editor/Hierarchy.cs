@@ -25,8 +25,8 @@ namespace BNK_Editor
         private byte[] _raw_eHircType = new byte[1];     // decide if important
         private byte[] _raw_dwSectionSize = new byte[4]; // find next header, edit if size changed
         private byte[] _raw_PrePropsData = new byte[32]; // dontgivadamn area
-        private byte[]? _raw_PropsData;                   // gen new on save.
-        private byte[]? _raw_PostPropsData;               // dontgiveadamn area 2
+        private byte[]? _raw_PropsData = new byte[0];    // gen new on save.
+        private byte[]? _raw_PostPropsData= new byte[0];              // dontgiveadamn area 2
 
         public void GenNewHirc(byte[] rawData, int index)
         {
@@ -91,11 +91,17 @@ namespace BNK_Editor
             data.Dispose();
         }
 
-        public byte[] WriteAllData()
+        public byte[] MakeHirc()
         {
-            // combine eHircType, dwSectionSize, PreProp, Prop and PostProp.
-            // Return
-            return new byte[0];
+            GenPropsData();
+            byte[] RawData = _raw_eHircType;
+            _raw_dwSectionSize = Utils.ToHex(_raw_PrePropsData.Length +_raw_PostPropsData.Length + _raw_PropsData.Length);
+
+            return _raw_eHircType
+                    .Concat(_raw_dwSectionSize)
+                    .Concat(_raw_PrePropsData)
+                    .Concat(_raw_PropsData)
+                    .Concat(_raw_PostPropsData).ToArray();
         }
 
         public void ReadAllBytes()
@@ -143,7 +149,25 @@ namespace BNK_Editor
 
         public void GenPropsData() 
         {
+            byte[] propsT = new byte[PropsCount];
+            byte[] propsV = new byte[0];
             _raw_PropsData = new byte[0];
+
+            for (int i=0; i < PropsCount; i++)
+            {
+                propsT[i] = Convert.ToByte(propsType[i]);
+                propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
+            }
+            
+            if (PropsCount == 0) return;
+            _raw_PropsData = new byte[1];
+            _raw_PropsData[0] = Utils.ToHexByte(PropsCount);
+            _raw_PropsData = _raw_PropsData.Concat(propsT).Concat(propsV).ToArray();
+
+            //_raw_PropsData = 
+            //      Utils.ToHex(PropsCount)
+            //    + Utils.ToHex;
+            //_raw_PropsData = new byte[0];
         }
 
         public string[] ListProps()
