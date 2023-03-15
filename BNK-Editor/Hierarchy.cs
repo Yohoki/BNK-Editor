@@ -164,7 +164,9 @@ namespace BNK_Editor
             for (int i=0; i < PropsCount; i++)
             {
                 propsT[i] = Convert.ToByte(propsType[i]);
-                propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
+                if (propsType[i] == 0x3A || propsType[i] == 0x07) // Loops need to be int32, not float
+                { propsV = propsV.Concat(Utils.ToHex(Convert.ToInt32(propsValues[i]))).ToArray(); }
+                else propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
             }
             _raw_PropsData = new byte[1];
             _raw_PropsData[0] = Utils.ToHexByte(PropsCount);
