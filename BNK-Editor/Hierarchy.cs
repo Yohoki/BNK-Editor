@@ -48,10 +48,10 @@ namespace BNK_Editor
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36) { data.ReadExactly(_raw_PrePropsData, 0, 32); }
             else
             {
-                _raw_PrePropsData = new byte[data.Length - data.Position -5];
-                data.ReadExactly(_raw_PrePropsData, 0, Convert.ToInt32(data.Length - data.Position) - 5);
+                _raw_PrePropsData = new byte[data.Length - data.Position];
+                data.ReadExactly(_raw_PrePropsData, 0, Convert.ToInt32(data.Length - data.Position));
             }
-
+            //MessageBox.Show(BitConverter.ToString(_raw_PrePropsData),"DEBUG PREPROPS ID " + _index);
             //check first byte for type
             if (eHircType == 0x02)
             {
@@ -87,7 +87,8 @@ namespace BNK_Editor
 
                 data.ReadExactly(_raw_PostPropsData, 0, _raw_PostPropsData.Length);
             }
-                
+            //MessageBox.Show(BitConverter.ToString(_raw_PostPropsData), "DEBUG POSTPROPS ID " + _index);
+
             data.Dispose();
         }
 
@@ -97,6 +98,12 @@ namespace BNK_Editor
             byte[] RawData = _raw_eHircType;
             _raw_dwSectionSize = Utils.ToHex(_raw_PrePropsData.Length +_raw_PostPropsData.Length + _raw_PropsData.Length);
 
+            /*MessageBox.Show(BitConverter.ToString(_raw_eHircType
+                    .Concat(_raw_dwSectionSize)
+                    .Concat(_raw_PrePropsData)
+                    .Concat(_raw_PropsData)
+                    .Concat(_raw_PostPropsData).ToArray()).Replace("-",""), "DEBUG: ChunkID " + _index);
+            */
             return _raw_eHircType
                     .Concat(_raw_dwSectionSize)
                     .Concat(_raw_PrePropsData)
@@ -149,17 +156,16 @@ namespace BNK_Editor
 
         public void GenPropsData() 
         {
+            if (eHircType != 0x02) return;
+            if (PropsCount == 0) { _raw_PropsData = new byte[1]; return; }
             byte[] propsT = new byte[PropsCount];
             byte[] propsV = new byte[0];
-            _raw_PropsData = new byte[0];
 
             for (int i=0; i < PropsCount; i++)
             {
                 propsT[i] = Convert.ToByte(propsType[i]);
                 propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
             }
-            
-            if (PropsCount == 0) return;
             _raw_PropsData = new byte[1];
             _raw_PropsData[0] = Utils.ToHexByte(PropsCount);
             _raw_PropsData = _raw_PropsData.Concat(propsT).Concat(propsV).ToArray();

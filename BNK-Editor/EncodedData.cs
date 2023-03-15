@@ -93,7 +93,14 @@ namespace BNK_Editor
                 }
                 _ChunkSize = Utils.ToHex(_DataSection.Length);
             }
-            MessageBox.Show(BitConverter.ToString(_Header.Concat(_ChunkSize).Concat(_DataSection).ToArray()).Replace("-",""), "DEBUG: Rebuild Chunks");//DEBUG
+
+            
+            MessageBox.Show(BitConverter.ToString(_Header
+                .Concat(_ChunkSize)
+                .Concat(_DataSection).ToArray())
+                .Replace("-",""),
+                "DEBUG: Rebuild Chunks - " + Utils.ReadHexAsText(_Header));//DEBUG
+            
             return _Header.Concat(_ChunkSize).Concat(_DataSection).ToArray();
         }
 
