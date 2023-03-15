@@ -38,9 +38,9 @@ namespace BNK_Editor
             dwSectionSize = Utils.ReadHexAsInt32(_raw_dwSectionSize);
 
             //check Codec info
-            data.Position += 6;
+            data.Position += 4;
             uPluginID = data.ReadByte();
-            data.Position -= 7;
+            data.Position -= 5;
 
             //catch small packets.
             if (Utils.ReadHexAsInt32(_raw_dwSectionSize) >= 36) { data.ReadExactly(_raw_PrePropsData, 0, 32); }
@@ -55,7 +55,7 @@ namespace BNK_Editor
             {
                 GetSourceID();
 
-                if (uPluginID == 101) data.Position += 4;
+                if (uPluginID == 0x02) data.Position += 4;
 
                 //if 02, store all data properly
                 byte[] _buffer = new byte[4];
