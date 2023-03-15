@@ -95,12 +95,12 @@ namespace BNK_Editor
             }
 
             
-            MessageBox.Show(BitConverter.ToString(_Header
+            /*MessageBox.Show(BitConverter.ToString(_Header
                 .Concat(_ChunkSize)
                 .Concat(_DataSection).ToArray())
                 .Replace("-",""),
                 "DEBUG: Rebuild Chunks - " + Utils.ReadHexAsText(_Header));//DEBUG
-            
+            */
             return _Header.Concat(_ChunkSize).Concat(_DataSection).ToArray();
         }
 

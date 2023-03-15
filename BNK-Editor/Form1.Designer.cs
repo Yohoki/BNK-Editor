@@ -62,6 +62,7 @@
             // 
             // Cmb_HeirList
             // 
+            this.Cmb_HeirList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Cmb_HeirList.FormattingEnabled = true;
             this.Cmb_HeirList.Location = new System.Drawing.Point(12, 47);
             this.Cmb_HeirList.Name = "Cmb_HeirList";
@@ -71,6 +72,7 @@
             // 
             // Cmb_PropList
             // 
+            this.Cmb_PropList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Cmb_PropList.FormattingEnabled = true;
             this.Cmb_PropList.Location = new System.Drawing.Point(12, 81);
             this.Cmb_PropList.Name = "Cmb_PropList";
@@ -112,6 +114,7 @@
             this.NumPropValue.Size = new System.Drawing.Size(69, 27);
             this.NumPropValue.TabIndex = 6;
             this.NumPropValue.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.NumPropValue.ValueChanged += new System.EventHandler(this.NumPropValue_ValueChanged);
             // 
             // Lbl_PropName
             // 

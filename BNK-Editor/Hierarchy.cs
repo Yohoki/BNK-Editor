@@ -11,12 +11,10 @@ namespace BNK_Editor
         // Converted Bits and Bobs.
         public byte        eHircType;          // we really only care about 0x02(Sound)... just store the rest...
         public int         dwSectionSize;      // Needed to find next Hierachy
-      //public int         ulID;               // Display this? Really only used internally...
         public int         sourceID;           // Which WEM file is edited
         public int         PropsCount = 0;     // # of Properties to edit
         public List<int>   propsType = new();  // Type of property (0x00=Vol, 0x3A=Loops)
         public List<float> propsValues = new();// Value of property. (Most are Float, Loops is INT)
-        //public int         propValueLoops = 0; // Loops needs to use INT.
         public int         uPluginID; //!!-----// IMPORTANT Check for 0x65 and add +4 offset to props list if true.
 
         public int         _index;
@@ -152,8 +150,6 @@ namespace BNK_Editor
 
         public void AddNewProp() { }
 
-        public void RemoveProp() { }
-
         public void GenPropsData() 
         {
             if (eHircType != 0x02) return;
@@ -163,10 +159,17 @@ namespace BNK_Editor
 
             for (int i=0; i < PropsCount; i++)
             {
-                propsT[i] = Convert.ToByte(propsType[i]);
-                if (propsType[i] == 0x3A || propsType[i] == 0x07) // Loops need to be int32, not float
-                { propsV = propsV.Concat(Utils.ToHex(Convert.ToInt32(propsValues[i]))).ToArray(); }
-                else propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
+                if (propsValues[i] != 0) // Only save props that are used, drop defaults.
+                {
+                    propsT[i] = Convert.ToByte(propsType[i]);
+                    if (propsType[i] == 0x3A || propsType[i] == 0x07) // Loops need to be POSITIVE int32, not float
+                    {
+                        propsV = propsV.Concat(
+                            Utils.ToHex( Math.Abs(
+                                Convert.ToInt32(propsValues[i])))).ToArray();
+                    }
+                    else propsV = propsV.Concat(Utils.ToHex(propsValues[i])).ToArray();
+                }
             }
             _raw_PropsData = new byte[1];
             _raw_PropsData[0] = Utils.ToHexByte(PropsCount);

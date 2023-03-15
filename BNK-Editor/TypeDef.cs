@@ -8,6 +8,9 @@ namespace BNK_Editor
 {
     public class TypeDef
     {
+        public static byte[] returnPropTypes()
+        { return new byte[]{0x00, 0x02, 0x03, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0D, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x3A}; }
+
         public static string getHircType(byte b)
         {
             switch (b)
@@ -73,7 +76,7 @@ namespace BNK_Editor
                 case 0x0B:
                     return "2D: Panner X-coordinate";
                 case 0x0C:
-                    return "2D: Panner Y-coordinate"; //Maybe flipped?
+                    return "2D: Panner Y-coordinate"; //Maybe X/Y flipped?
                 case 0x0D:
                     return "Center %";
                 case 0x12:
@@ -91,7 +94,7 @@ namespace BNK_Editor
                 case 0x18:
                     return "Output Bus: Low-Pass Filter";
                 case 0x3A:
-                    return "Loop";
+                    return "Loop (HogWatrs Legacy)";
             }
             return b + " - Unknown Property";
         }

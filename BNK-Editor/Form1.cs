@@ -1,6 +1,9 @@
 using System.Buffers.Binary;
 using System.DirectoryServices.ActiveDirectory;
+using System.IO;
 using System.Text;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BNK_Editor
 {
@@ -85,13 +88,69 @@ namespace BNK_Editor
 
         private void Btn_Save_Click(object sender, EventArgs e)
         {
-              
+            Stream myStream;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
+            saveFileDialog1.Filter = "WWise SoundBank File (*.bnk)|*.bnk|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                {
+                    //File.Create(saveFileDialog.FileName);
+                    foreach (EncodedData D in BankFile._headerList)
+                    {
+                        myStream.Write(D.MakeDataChunks());
+                    }
+                    // Code to write the stream goes here.
+                    myStream.Close();
+                    MessageBox.Show("Save Completed");
+                }
+            }
+
+            /*//...
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "WWise SoundBank|*.bnk";
+            saveFileDialog.Title = "Save WWise SoundBank";
+            saveFileDialog.ShowDialog();
+            if (saveFileDialog.FileName != "")
+            {
+                try
+                {
+                    using var writer = new BinaryWriter(File.OpenWrite(saveFileDialog.FileName));
+
+                    if (File.Exists(saveFileDialog.FileName))
+                    {
+                        File.Delete(saveFileDialog.FileName);
+                    }
+
+                    File.Create(saveFileDialog.FileName);
+                    foreach (EncodedData D in BankFile._headerList)
+                    {
+                        writer.Write(D.MakeDataChunks());
+                    }
+                }
+                catch { MessageBox.Show("Error while saving file."); return; }
+                MessageBox.Show("File saved!");
+            }*/
         }
+
 
         private void Btn_AddNew_Click(object sender, EventArgs e)
         {
-
+            Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
+            if (Hirc.eHircType != 0x02) return;
+            foreach (byte b in TypeDef.returnPropTypes())
+            {
+                if (!Hirc.propsType.Contains(b))
+                {
+                    Hirc.propsType.Add(b);
+                    Hirc.propsValues.Add(0);
+                }
+            }
+            LoadPropsCMBList();
         }
 
         private void Btn_Remove_Click(object sender, EventArgs e)
@@ -99,12 +158,12 @@ namespace BNK_Editor
 
         }
 
-        //DEBUG Star
+        //DEBUG Start
         private void DBG_Btn_Debug_Click(object sender, EventArgs e)
         {
             foreach (EncodedData D in BankFile._headerList)
             {
-                D.MakeDataChunks(); //DEBUGHirc.MakeHirc();
+                D.MakeDataChunks();
             }
         } //DEBUG End
 
@@ -118,6 +177,25 @@ namespace BNK_Editor
         private void Cmb_PropList_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadPropValue();
+        }
+
+        private void NumPropValue_ValueChanged(object sender, EventArgs e)
+        {
+            Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
+            if (Hirc.eHircType != 0x02) return;
+
+            try
+            {
+                Hirc.propsValues[Cmb_PropList.SelectedIndex] = (float)NumPropValue.Value;
+                for (int i = 0; i < BankFile._headerList.Count; i++)
+                {
+                    for (int h = 0; h < BankFile._headerList[i].HIRCList.Count; h++)
+                    {
+                        if (BankFile._headerList[i].HIRCList[h]._index == Hirc._index) BankFile._headerList[i].HIRCList[h] = Hirc;
+                    }
+                }
+            }
+            catch { }
         }
     }
 }
