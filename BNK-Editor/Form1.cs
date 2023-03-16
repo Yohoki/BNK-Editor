@@ -32,7 +32,7 @@ namespace BNK_Editor
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
 
-                    openFileDialog.Filter = "WWise SoundBank files (*.bnk)|*.bnk|All files (*.*)|*.*";
+                    openFileDialog.Filter = "WWise SoundBank File (*.bnk, *.bnk_)|*.bnk; *.bnk_|BNK Backup (*.bnk_)|*.bnk_|All files (*.*)|*.*";
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         Filepath = openFileDialog.FileName;
@@ -90,8 +90,8 @@ namespace BNK_Editor
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.Filter = "WWise SoundBank File (*.bnk)|*.bnk|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.Filter = "WWise SoundBank File (*.bnk)|*.bnk|BNK Backup (*.bnk_)|*.bnk_|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -155,7 +155,22 @@ namespace BNK_Editor
 
         private void Btn_Remove_Click(object sender, EventArgs e)
         {
+            Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
+            if (Hirc.eHircType != 0x02) return;
 
+            try
+            {
+                Hirc.propsValues[Cmb_PropList.SelectedIndex] = (float)0.00;
+                for (int i = 0; i < BankFile._headerList.Count; i++)
+                {
+                    for (int h = 0; h < BankFile._headerList[i].HIRCList.Count; h++)
+                    {
+                        if (BankFile._headerList[i].HIRCList[h]._index == Hirc._index) BankFile._headerList[i].HIRCList[h] = Hirc;
+                    }
+                }
+            }
+            catch { }
+            LoadPropValue();
         }
 
         //DEBUG Start
