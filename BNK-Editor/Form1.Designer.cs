@@ -36,13 +36,12 @@
             this.NumPropValue = new System.Windows.Forms.NumericUpDown();
             this.Lbl_PropName = new System.Windows.Forms.Label();
             this.Btn_Remove = new System.Windows.Forms.Button();
-            this.DBG_Btn_Debug = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.NumPropValue)).BeginInit();
             this.SuspendLayout();
             // 
             // Btn_Open
             // 
-            this.Btn_Open.Location = new System.Drawing.Point(12, 12);
+            this.Btn_Open.Location = new System.Drawing.Point(55, 12);
             this.Btn_Open.Name = "Btn_Open";
             this.Btn_Open.Size = new System.Drawing.Size(94, 29);
             this.Btn_Open.TabIndex = 1;
@@ -52,7 +51,7 @@
             // 
             // Btn_Save
             // 
-            this.Btn_Save.Location = new System.Drawing.Point(112, 12);
+            this.Btn_Save.Location = new System.Drawing.Point(155, 12);
             this.Btn_Save.Name = "Btn_Save";
             this.Btn_Save.Size = new System.Drawing.Size(94, 29);
             this.Btn_Save.TabIndex = 2;
@@ -66,7 +65,7 @@
             this.Cmb_HeirList.FormattingEnabled = true;
             this.Cmb_HeirList.Location = new System.Drawing.Point(12, 47);
             this.Cmb_HeirList.Name = "Cmb_HeirList";
-            this.Cmb_HeirList.Size = new System.Drawing.Size(263, 28);
+            this.Cmb_HeirList.Size = new System.Drawing.Size(280, 28);
             this.Cmb_HeirList.TabIndex = 3;
             this.Cmb_HeirList.SelectedIndexChanged += new System.EventHandler(this.Cmb_HeirList_SelectedIndexChanged);
             // 
@@ -76,13 +75,13 @@
             this.Cmb_PropList.FormattingEnabled = true;
             this.Cmb_PropList.Location = new System.Drawing.Point(12, 81);
             this.Cmb_PropList.Name = "Cmb_PropList";
-            this.Cmb_PropList.Size = new System.Drawing.Size(220, 28);
+            this.Cmb_PropList.Size = new System.Drawing.Size(280, 28);
             this.Cmb_PropList.TabIndex = 4;
             this.Cmb_PropList.SelectedIndexChanged += new System.EventHandler(this.Cmb_PropList_SelectedIndexChanged);
             // 
             // Btn_AddNew
             // 
-            this.Btn_AddNew.Location = new System.Drawing.Point(238, 80);
+            this.Btn_AddNew.Location = new System.Drawing.Point(255, 115);
             this.Btn_AddNew.Name = "Btn_AddNew";
             this.Btn_AddNew.Size = new System.Drawing.Size(37, 29);
             this.Btn_AddNew.TabIndex = 5;
@@ -99,7 +98,7 @@
             0,
             0,
             65536});
-            this.NumPropValue.Location = new System.Drawing.Point(163, 115);
+            this.NumPropValue.Location = new System.Drawing.Point(137, 115);
             this.NumPropValue.Maximum = new decimal(new int[] {
             200,
             0,
@@ -127,7 +126,7 @@
             // 
             // Btn_Remove
             // 
-            this.Btn_Remove.Location = new System.Drawing.Point(238, 115);
+            this.Btn_Remove.Location = new System.Drawing.Point(212, 115);
             this.Btn_Remove.Name = "Btn_Remove";
             this.Btn_Remove.Size = new System.Drawing.Size(37, 29);
             this.Btn_Remove.TabIndex = 8;
@@ -135,22 +134,11 @@
             this.Btn_Remove.UseVisualStyleBackColor = true;
             this.Btn_Remove.Click += new System.EventHandler(this.Btn_Remove_Click);
             // 
-            // DBG_Btn_Debug
-            // 
-            this.DBG_Btn_Debug.Location = new System.Drawing.Point(212, 12);
-            this.DBG_Btn_Debug.Name = "DBG_Btn_Debug";
-            this.DBG_Btn_Debug.Size = new System.Drawing.Size(63, 29);
-            this.DBG_Btn_Debug.TabIndex = 9;
-            this.DBG_Btn_Debug.Text = "DEV";
-            this.DBG_Btn_Debug.UseVisualStyleBackColor = true;
-            this.DBG_Btn_Debug.Click += new System.EventHandler(this.DBG_Btn_Debug_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 153);
-            this.Controls.Add(this.DBG_Btn_Debug);
+            this.ClientSize = new System.Drawing.Size(302, 153);
             this.Controls.Add(this.Btn_Remove);
             this.Controls.Add(this.Lbl_PropName);
             this.Controls.Add(this.NumPropValue);
@@ -180,6 +168,5 @@
         public ComboBox Cmb_PropList;
         public NumericUpDown NumPropValue;
         private Button Btn_Remove;
-        private Button DBG_Btn_Debug;
     }
 }

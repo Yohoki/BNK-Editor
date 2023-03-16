@@ -32,7 +32,7 @@ namespace BNK_Editor
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
 
-                    openFileDialog.Filter = "WWise SoundBank File (*.bnk, *.bnk_)|*.bnk; *.bnk_|BNK Backup (*.bnk_)|*.bnk_|All files (*.*)|*.*";
+                    openFileDialog.Filter = "WWise SoundBank File (*.bnk, *.bnk_)|*.bnk; *.bnk_|All files (*.*)|*.*";
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         Filepath = openFileDialog.FileName;
@@ -108,32 +108,6 @@ namespace BNK_Editor
                     MessageBox.Show("Save Completed");
                 }
             }
-
-            /*//...
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "WWise SoundBank|*.bnk";
-            saveFileDialog.Title = "Save WWise SoundBank";
-            saveFileDialog.ShowDialog();
-            if (saveFileDialog.FileName != "")
-            {
-                try
-                {
-                    using var writer = new BinaryWriter(File.OpenWrite(saveFileDialog.FileName));
-
-                    if (File.Exists(saveFileDialog.FileName))
-                    {
-                        File.Delete(saveFileDialog.FileName);
-                    }
-
-                    File.Create(saveFileDialog.FileName);
-                    foreach (EncodedData D in BankFile._headerList)
-                    {
-                        writer.Write(D.MakeDataChunks());
-                    }
-                }
-                catch { MessageBox.Show("Error while saving file."); return; }
-                MessageBox.Show("File saved!");
-            }*/
         }
 
 
