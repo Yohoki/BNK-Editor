@@ -61,7 +61,6 @@ namespace BNK_Editor
         {
             Cmb_PropList.Enabled= false;
             NumPropValue.Enabled= false;
-            //NumPropValue.Value = 0.00M;
             Cmb_PropList.Items.Clear();
 
             foreach (Hierarchy H in Cmb_HeirList.Items)
@@ -149,6 +148,7 @@ namespace BNK_Editor
                     Hirc.propsType.Add(b);
                     Hirc.propsValues.Add(0);
                 }
+                Hirc.PropsCount = Hirc.propsType.Count;
             }
             LoadPropsCMBList();
         }
