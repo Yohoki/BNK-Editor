@@ -52,6 +52,7 @@
             // 
             // Btn_Save
             // 
+            this.Btn_Save.Enabled = false;
             this.Btn_Save.Location = new System.Drawing.Point(155, 12);
             this.Btn_Save.Name = "Btn_Save";
             this.Btn_Save.Size = new System.Drawing.Size(94, 29);
@@ -82,6 +83,7 @@
             // 
             // Btn_AddNew
             // 
+            this.Btn_AddNew.Enabled = false;
             this.Btn_AddNew.Location = new System.Drawing.Point(255, 115);
             this.Btn_AddNew.Name = "Btn_AddNew";
             this.Btn_AddNew.Size = new System.Drawing.Size(37, 29);
@@ -127,6 +129,7 @@
             // 
             // Btn_Remove
             // 
+            this.Btn_Remove.Enabled = false;
             this.Btn_Remove.Location = new System.Drawing.Point(212, 115);
             this.Btn_Remove.Name = "Btn_Remove";
             this.Btn_Remove.Size = new System.Drawing.Size(37, 29);

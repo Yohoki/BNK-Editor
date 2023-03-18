@@ -19,6 +19,7 @@ namespace BNK_Editor
         public string DBG_FileName = "spells_perk_shadowblink_akb.bnk"; //DEBUG
         public Stream StreamBankFile;
         public string Filepath;
+        public bool changedFile = false;
         public BNK BankFile = new();
 
         private void Btn_Open_Click(object sender, EventArgs e)
@@ -36,10 +37,13 @@ namespace BNK_Editor
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         Filepath = openFileDialog.FileName;
+                        Btn_Save.Enabled= true;
                     }
                     else return;
                 }
             }
+
+            this.Text = Path.GetFileName(Filepath);
 
             StreamBankFile = File.OpenRead(Filepath);
             BankFile.LoadData(StreamBankFile);
@@ -71,8 +75,15 @@ namespace BNK_Editor
                 }
             }
             Cmb_PropList.SelectedIndex = 0;
-            if (Cmb_PropList.Items[0] == "No Properties Available") return;
+            if (Cmb_PropList.Items[0] == "No Properties Available")
+            {
+                Btn_AddNew.Enabled= false;
+                Btn_Remove.Enabled= false;
+                return;
+            }
             Cmb_PropList.Enabled = true;
+            Btn_AddNew.Enabled = true;
+            Btn_Remove.Enabled = true;
             LoadPropValue();
         }
 
@@ -87,12 +98,15 @@ namespace BNK_Editor
 
         private void Btn_Save_Click(object sender, EventArgs e)
         {
+            this.Text = Path.GetFileName(Filepath);
+
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.Filter = "WWise SoundBank File (*.bnk)|*.bnk|BNK Backup (*.bnk_)|*.bnk_|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
+            saveFileDialog1.FileName = Path.GetFileName(Filepath);
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -113,6 +127,7 @@ namespace BNK_Editor
 
         private void Btn_AddNew_Click(object sender, EventArgs e)
         {
+            this.Text = '*' + Path.GetFileName(Filepath);
             Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
             if (Hirc.eHircType != 0x02) return;
             foreach (byte b in TypeDef.returnPropTypes())
@@ -129,6 +144,7 @@ namespace BNK_Editor
 
         private void Btn_Remove_Click(object sender, EventArgs e)
         {
+            this.Text = '*' + Path.GetFileName(Filepath);
             Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
             if (Hirc.eHircType != 0x02) return;
 
@@ -173,6 +189,8 @@ namespace BNK_Editor
             Hierarchy Hirc = (Hierarchy)Cmb_HeirList.Items[Cmb_HeirList.SelectedIndex];
             if (Hirc.eHircType != 0x02) return;
 
+            this.Text = '*' + Path.GetFileName(Filepath);
+
             try
             {
                 Hirc.propsValues[Cmb_PropList.SelectedIndex] = (float)NumPropValue.Value;
@@ -180,7 +198,10 @@ namespace BNK_Editor
                 {
                     for (int h = 0; h < BankFile._headerList[i].HIRCList.Count; h++)
                     {
-                        if (BankFile._headerList[i].HIRCList[h]._index == Hirc._index) BankFile._headerList[i].HIRCList[h] = Hirc;
+                        if (BankFile._headerList[i].HIRCList[h]._index == Hirc._index)
+                        {
+                            BankFile._headerList[i].HIRCList[h] = Hirc;
+                        }
                     }
                 }
             }

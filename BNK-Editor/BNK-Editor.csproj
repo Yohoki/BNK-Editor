@@ -8,6 +8,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>BoNK.ico</ApplicationIcon>
+    <AssemblyName>BoNK</AssemblyName>
+    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <Company>Yohoki</Company>
   </PropertyGroup>
 
   <ItemGroup>
