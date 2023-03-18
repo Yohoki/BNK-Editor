@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -150,16 +151,81 @@ namespace BNK_Editor
 
         public void AddNewProp() { }
 
-        public void GenPropsData() 
+        public void GenPropsData()
         {
             if (eHircType != 0x02) return;
+            List<Tuple<int, float>> pairs = propsType.Zip(propsValues, (type, value) => Tuple.Create(type, value))
+                .Where(pair => pair.Item2 != 0)
+                .ToList();
+
+            byte[] byteArray = pairs
+                .OrderBy(pair => pair.Item1)
+                .SelectMany(pair => { return new byte[] { (byte)pair.Item1 }; })
+                .Concat(pairs
+                .OrderBy(pair => pair.Item1)
+                .SelectMany(pair => {
+                    if (pair.Item1 == 0x07 || pair.Item1 == 0x3A)
+                    { return BitConverter.GetBytes((int)pair.Item2); }
+                    else
+                    { return BitConverter.GetBytes(pair.Item2); }
+                }))
+                .ToArray();
+
+            _raw_PropsData = new byte[byteArray.Length + 1];
+            _raw_PropsData[0] = (byte)(pairs.Count); // calculate number of pairs
+            Array.Copy(byteArray, 0, _raw_PropsData, 1, byteArray.Length);
+
+            /* GPT CODE
+            // Initialize a list to hold our resulting byte array
+            List<byte> byteList = new List<byte>();
+
+            // Add the number of property types to the byte array
+            //byteList.Add((byte)propsType.Count);
+
+            // Loop through each property type and value
+            for (int i = 0; i < propsType.Count; i++)
+            {
+                // If the value is zero, skip adding it to the byte array
+                if (propsValues[i] == 0)
+                {
+                    continue;
+                }
+
+                // Add the property type to the byte array as a single byte
+                byteList.Add((byte)propsType[i]);
+
+                // If the property type is 0x37 or 0x07, convert the float value to a 4-byte long int
+                if (propsType[i] == 0x37 || propsType[i] == 0x07)
+                {
+                    byteList.AddRange(BitConverter.GetBytes((int)propsValues[i]));
+                }
+                else
+                {
+                    // Otherwise, add the float value to the byte array as 4 bytes
+                    byteList.AddRange(BitConverter.GetBytes(propsValues[i]));
+                }
+            }
+
+            // Add the count of properties to the byte array as a single byte
+            byteList.Insert(0, (byte)((byteList.Count - 1)/5));
+
+            // Convert the list of bytes to a byte array
+            _raw_PropsData = byteList.ToArray();
+
+            //_raw_PropsData = new byte[1] { (byte)(byteArray.Count / 5) };
+            //_raw_PropsData = _raw_PostPropsData.Concat(byteArray).ToArray();
+            //byte[] result = byteArray.ToArray();
+            */ //GPT CODE
+
+
+            /*if (eHircType != 0x02) return;
             if (PropsCount == 0) { _raw_PropsData = new byte[1]; return; }
-            byte[] propsT = new byte[PropsCount];
+            byte[] propsT = new byte[0];
             byte[] propsV = new byte[0];
 
             for (int i=0; i < PropsCount; i++)
             {
-                if (propsValues[i] != 0) // Only save props that are used, drop defaults.
+                if (propsValues[i] != 0x00) // Only save props that are used, drop defaults.
                 {
                     propsT[i] = Convert.ToByte(propsType[i]);
                     if (propsType[i] == 0x3A || propsType[i] == 0x07) // Loops need to be POSITIVE int32, not float
@@ -178,7 +244,7 @@ namespace BNK_Editor
             //_raw_PropsData = 
             //      Utils.ToHex(PropsCount)
             //    + Utils.ToHex;
-            //_raw_PropsData = new byte[0];
+            //_raw_PropsData = new byte[0];*/
         }
 
         public string[] ListProps()
